@@ -1,0 +1,47 @@
+ <!-- register.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+</head>
+<body>
+  <h2>Register</h2>
+  <form id="registerForm">
+    Username: <input type="text" id="username" required><br>
+    Email: <input type="email" id="email" required><br>
+    Password: <input type="password" id="password" required><br>
+    <button type="submit">Register</button>
+  </form>
+
+  <script>
+    document.getElementById("registerForm").addEventListener("submit", function(event){
+      event.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const emailid = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      fetch("http://localhost:5000/userRegister", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, emailid, password})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.Message === "User Register Success") {
+          alert("Registration Successful! Redirecting to Login...");
+          window.location.href = "login1.html";  // Redirect to login page here
+        } else if (data.error) {
+          alert("Error: " + data.error);
+        } else {
+          alert("Unexpected response.");
+        }
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        alert("Registration failed. Try again.");
+      });
+    });
+  </script>
+</body>
+</html>
