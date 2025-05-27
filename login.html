@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Register - Bus Tracker</title>
+  <title>Login - Bus Tracker</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -33,7 +33,6 @@
       color: #333;
     }
 
-    input[type="text"],
     input[type="email"],
     input[type="password"] {
       width: 100%;
@@ -44,7 +43,7 @@
       font-size: 14px;
     }
 
-    .register-button {
+    .login-button {
       width: 100%;
       background-color: #007BFF;
       color: white;
@@ -55,11 +54,11 @@
       cursor: pointer;
     }
 
-    .register-button:hover {
+    .login-button:hover {
       background-color: #0056b3;
     }
 
-    .login-link {
+    .register-link {
       display: block;
       text-align: center;
       margin-top: 15px;
@@ -68,17 +67,15 @@
       font-size: 14px;
     }
 
-    .login-link:hover {
+    .register-link:hover {
       text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Create Account</h2>
-    <form id="register">
-      <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Enter your username" required>
+    <h2>Login</h2>
+    <form id="login">
 
       <label for="email">Email</label>
       <input type="email" id="email" placeholder="Enter your email" required>
@@ -86,61 +83,56 @@
       <label for="password">Password</label>
       <input type="password" id="password" placeholder="Enter your password" required>
 
-      <label for="confirmPassword">Confirm Password</label>
-      <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
-
-      <button class="register-button" type="submit">Register</button>
+      <button class="login-button" type="submit">Login</button>
     </form>
 
-    <a href="login.html" class="login-link">Already have an account? Login</a>
+    <a href="register.html" class="register-link">Don't have an account? Create one</a>
   </div>
 
   <script>
-    const form = document.getElementById('register');
+    const form = document.getElementById("login");
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const username = document.getElementById('username').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      if (!username || !email || !password || !confirmPassword) {
-        alert('Please fill in all fields.');
-        return;
-      }
-
-      if (password !== confirmPassword) {
-        alert('Passwords do not match.');
+      if (!email || !password) {
+        alert("Please fill in all fields");
         return;
       }
 
       const data = {
-        username: username,
-        emailid: email,       // Match backend key if needed
+        emailid: email,
         password: password
       };
 
-      fetch('http://localhost:5000/userRegister', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      fetch("http://localhost:5000/userLogin", {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
       })
       .then(res => res.json())
       .then(data => {
-        console.log('Response:', data);
+        console.log("Response:", data);
 
-        if (data.success) {
-          alert('Registration successful! Please login.');
-          window.location.href = 'login.html';
+        if (data.access_token) {
+          // Store access token
+          localStorage.setItem("access_token", data.access_token);
+          
+          // Store complete user object as JSON string
+          localStorage.setItem("user", JSON.stringify(data.user));
+
+          alert("Login Successful");
+          window.location.href = "homepage.html";
         } else {
-          alert(data.Message || 'Registration failed. Try again.');
+          alert(data.Message || "Login Failed");
         }
       })
       .catch(error => {
-        console.error('Error:', error);
-        alert('Connection error. Please try again.');
+        console.error("Error:", error);
+        alert("Connection error. Please try again.");
       });
     });
   </script>
